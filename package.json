@@ -1,0 +1,16 @@
+{
+  "name": "ecommerce-application-be",
+  "version": "1.0.0",
+  "description": "- /test -> health check(D)\r - /seed -> seeding some data (D)\r - /api/users -> \r     - POST - /register --> create the user account\r     - POST - /activate --> activate the user account\r     - GET  - /profile --> get the user account\r     - DELETE - /:id --> delete the user account\r     - PUT - /:id --> update the user account\r     - PUT - /update-password/:id --> update the user password\r     - POST - /forget-password --> reset the password\r     - PUT - Admin - ban/:id --> ban the user\r     - PUT - Admin - unban/:id --> unban the user\r     - GET - Admin --> /export-users --> export the users\r     - GET - Admin --> /all-users --> get All users",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tanjila Shamima",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1"
+  }
+}
