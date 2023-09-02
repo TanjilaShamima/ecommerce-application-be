@@ -1,8 +1,11 @@
 const User = require("../models/userModel");
 
 
-
-/************************Get User By limit, page no, search value**********************************/
+/*
+    - Get User By limit, page no, search value
+    - filter by search params, page no and limit per page
+    - return result message and the list of users found
+*/
 
 const getFilteredUsers = async(req, res) => {
     try {
