@@ -1,8 +1,14 @@
 const express = require('express');
+const { serverPort } = require('./src/secret');
+const connectDatabase = require('./src/config/db');
 const app = express();
-const port = process.env.PORT || 1000
 
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
-app.listen(port, () => {
-    console.log('listening on port', port);
+app.listen(serverPort, async() => {
+    console.log('listening on port', serverPort);
+    await connectDatabase();
 })
+
+module.exports = app

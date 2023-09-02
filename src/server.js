@@ -1,6 +1,6 @@
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 2000
+const app = require('..');
+const { serverPort } = require('./secret');
+const port = serverPort || 2000
 
 
 app.listen(port, () => {
