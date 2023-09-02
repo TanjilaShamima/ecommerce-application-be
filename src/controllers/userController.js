@@ -1,15 +1,19 @@
 const User = require("../models/userModel");
 
+
+
+/************************Get User By limit, page no, search value**********************************/
+
 const getFilteredUsers = async(req, res) => {
     try {
         const search = req.query.search || '';
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 5;
 
-        const searchRegex = new RegExp('.*' + search + '.*', 'i');
+        const searchRegex = new RegExp('.*' + search + '.*', 'i'); // regex pattern to match search parameters in the query string and it will be case insensitive
 
         const filter = {
-            isAdmin: {$ne : true},
+            isAdmin: {$ne : true}, // filter not admin users only
             $or : [
                 {name: {$regex: searchRegex}},
                 {email: {$regex: searchRegex}},
@@ -17,10 +21,11 @@ const getFilteredUsers = async(req, res) => {
             ]
         }
 
-        const options = {password: 0};
+        const options = {password: 0}; // hide password from the filtered values
 
-        const users = await User.find(filter, options).limit(limit).skip((page-1) * limit);
-        const totalUsers = await User.find(filter).countDocuments();
+        const users = await User.find(filter, options).limit(limit).skip((page-1) * limit); // set limit to the page  and skip the previous page data
+
+        const totalUsers = await User.find(filter).countDocuments(); // count total documents
 
         if(users.length){
             const updateUsers = {password, ...users};
