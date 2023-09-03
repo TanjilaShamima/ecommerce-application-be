@@ -1,11 +1,15 @@
-const { sendWithNodemailer } = require("../helper/email");
+const {
+    sendWithNodemailer
+} = require("../helper/email");
 const {
     createJsonWebToken
 } = require("../helper/jsonWebToken");
 const User = require("../models/userModel");
 const {
-    jwtActivationKey, clientUrl
+    jwtActivationKey,
+    clientUrl
 } = require("../secret");
+const jwt = require('jsonwebtoken');
 const {
     successResponseController,
     errorResponseController
@@ -41,7 +45,7 @@ const processRegister = async (req, res) => {
 
         // create jwt token
         const token = createJsonWebToken(newUser, jwtActivationKey, "3d");
-        
+
         // prepare email
         const emailData = {
             email: email,
@@ -71,6 +75,34 @@ const processRegister = async (req, res) => {
     }
 }
 
+const verifyUserAndActivateUser = async(req, res) => {
+    try {
+        const token = req.body.token;
+        if (!token) {
+            return errorResponseController(res, {
+                statusCode: 404,
+                message: 'Token not found'
+            })
+        }
+
+        const decoded = jwt.verify(token, jwtActivationKey);
+
+        const user = await User.create(decoded);
+
+
+        return successResponseController(res, {
+            statusCode: 201,
+            message: 'User activated successfully',
+            payload: {
+                user
+            }
+        })
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 module.exports = {
-    processRegister
+    processRegister,
+    verifyUserAndActivateUser
 }
