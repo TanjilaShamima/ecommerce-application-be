@@ -1,19 +1,18 @@
-const {
-    default: mongoose
-} = require("mongoose");
-const User = require("../models/userModel");
+const mongoose = require("mongoose");
+const { errorResponseController } = require("../controllers/responseController");
 
-const findItemByID = async (id, option = {}) => {
+const findItemByID = async (Model, id, option = {}) => {
     try {
-        const item = await User.findById(id, option);
+        const item = await Model?.findById(id, option);
 
-        if (!item) {
+        if (item) {
+            return item;
+
+        } else {
             return errorResponseController(res, {
                 statusCode: 404,
-                message: 'No item found'
+                message: `No ${Model.modelName} found`
             })
-        } else {
-            return item;
         }
     } catch (error) {
         if (error instanceof mongoose.Error) {

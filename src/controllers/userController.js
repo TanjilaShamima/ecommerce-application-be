@@ -1,6 +1,4 @@
-const {
-    default: mongoose
-} = require("mongoose");
+const mongoose = require("mongoose");
 const User = require("../models/userModel");
 const {
     successResponseController,
@@ -96,7 +94,7 @@ const getUserByID = async (req, res) => {
         const option = {
             password: 0
         };
-        const user = await findItemByID(id, option);
+        const user = await findItemByID(User, id, option);
 
         return successResponseController(res, {
             statusCode: 200,
@@ -132,7 +130,7 @@ const deleteUserById = async (req, res) => {
     try {
 
         const id = req.params.id;
-        const user = await findItemByID(id);
+        const user = await findItemByID(User, id);
 
         const useImagePath = user?.image;
         fs.access(useImagePath, (err) => {
