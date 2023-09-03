@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const { successResponseController, errorResponseController } = require("./responseController");
 
 
 /*
@@ -31,25 +32,32 @@ const getFilteredUsers = async(req, res) => {
         const totalUsers = await User.find(filter).countDocuments(); // count total documents
 
         if(users.length){
-            const updateUsers = {password, ...users};
-            res.status(200).send({
-                message: 'Success',
-                users: updateUsers.users,
-                pagination: {
-                    totalPages: Math.ceil(totalUsers / limit),
-                    currentPage: page,
-                    previousPage: page -1 > 0 ? page - 1 : null,
-                    nextPage: page + 1 <= Math.ceil(totalUsers / limit) ? page + 1 : null
+            return successResponseController(res, {
+                statusCode: 200,
+                message: 'User were returned successfully',
+                payload: {
+                    users: users,
+                    pagination: {
+                        totalPages: Math.ceil(totalUsers / limit),
+                        currentPage: page,
+                        previousPage: page -1 > 0 ? page - 1 : null,
+                        nextPage: page + 1 <= Math.ceil(totalUsers / limit) ? page + 1 : null
+                    }
                 }
             })
         } else {
-            res.status(404).send({
+            return errorResponseController(res, {
+                statusCode: 404,
                 message: 'No users found'
             })
         }
         
     } catch (error) {
         console.error(error)
+        return errorResponseController(res, {
+            statusCode: error.statusCode,
+            message: error.message,
+        })
     }
 }
 
