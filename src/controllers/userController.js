@@ -5,7 +5,8 @@ const {
     errorResponseController
 } = require("./responseController");
 const { findItemByID } = require("../services/findItem");
-const fs = require('fs');
+const { deleteImage } = require("../helper/deleteImage");
+const fs = require('fs').promises;
 
 
 /*
@@ -132,19 +133,9 @@ const deleteUserById = async (req, res) => {
         const id = req.params.id;
         const user = await findItemByID(User, id);
 
-        const useImagePath = user?.image;
-        fs.access(useImagePath, (err) => {
-            if(err){
-                console.error(err);
-            } else {
-                fs.unlink(userImagePath, (err) => {
-                    if(err){
-                        throw err;
-                    }
-                    console.log('User image was deleted successfully');
-                });
-            }
-        })
+        const userImagePath = user?.image;
+        
+        await deleteImage(userImagePath);
 
         await User.findByIdAndDelete({_id: id, isAdmin: false});
 
