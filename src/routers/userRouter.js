@@ -1,5 +1,5 @@
 const express = require('express');
-const {getFilteredUsers} = require('../controllers/userController');
+const {getFilteredUsers, getUserByID, deleteUserById} = require('../controllers/userController');
 const userRouter = express.Router();
 
 /*
@@ -8,5 +8,17 @@ const userRouter = express.Router();
     - return result message and the list of users found
 */
 userRouter.get('/', getFilteredUsers);
+
+/*
+    - Get User By ID
+    - return result message and the user found
+*/
+userRouter.get('/:id', getUserByID);
+
+/*
+    - Delete User By ID
+    - return result message and the user found
+*/
+userRouter.delete('/:id', deleteUserById);
 
 module.exports = userRouter;

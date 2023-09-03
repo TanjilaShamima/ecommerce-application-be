@@ -1,5 +1,5 @@
 {
-  "name": "ecommerce-application-be",
+  "name": "eccommerce-application-be",
   "version": "1.0.0",
   "description": "- /test -> health check(D)\r - /seed -> seeding some data (D)\r - /api/users -> \r     - POST - /register --> create the user account\r     - POST - /activate --> activate the user account\r     - GET  - /profile --> get the user account\r     - DELETE - /:id --> delete the user account\r     - PUT - /:id --> update the user account\r     - PUT - /update-password/:id --> update the user password\r     - POST - /forget-password --> reset the password\r     - PUT - Admin - ban/:id --> ban the user\r     - PUT - Admin - unban/:id --> unban the user\r     - GET - Admin --> /export-users --> export the users\r     - GET - Admin --> /all-users --> get All users",
   "main": "index.js",
@@ -13,6 +13,7 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "mongoose": "^7.5.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1"
   }
