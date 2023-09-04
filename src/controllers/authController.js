@@ -26,6 +26,7 @@ const processRegister = async (req, res) => {
         } = req.body;
 
         console.log('req.body', req.file)
+        const imageBufferString = req.file.buffer.toString('base64');
 
         const newUser = {
             name,
@@ -33,7 +34,8 @@ const processRegister = async (req, res) => {
             password,
             phone,
             address,
-            image: req.file.path,
+            // image: req.file.path,
+            image: imageBufferString
         }
 
         const userExist = await User.exists({

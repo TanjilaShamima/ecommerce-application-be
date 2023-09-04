@@ -161,8 +161,13 @@ const deleteUserById = async (req, res) => {
     }
 }
 
+const updateUserById = () => {
+
+}
+
 module.exports = {
     getFilteredUsers,
     getUserByID,
-    deleteUserById
+    deleteUserById,
+    updateUserById
 }

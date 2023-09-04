@@ -1,5 +1,5 @@
 const express = require('express');
-const {getFilteredUsers, getUserByID, deleteUserById} = require('../controllers/userController');
+const {getFilteredUsers, getUserByID, deleteUserById, updateUserById} = require('../controllers/userController');
 const userRouter = express.Router();
 
 /*
@@ -20,5 +20,11 @@ userRouter.get('/:id', getUserByID);
     - return result message and the user found
 */
 userRouter.delete('/:id', deleteUserById);
+
+/*
+    - update User By ID
+    - return result message and the user found
+*/
+userRouter.delete('/:id', updateUserById);
 
 module.exports = userRouter;
