@@ -25,12 +25,15 @@ const processRegister = async (req, res) => {
             address
         } = req.body;
 
+        console.log('req.body', req.file)
+
         const newUser = {
             name,
             email,
             password,
             phone,
-            address
+            address,
+            image: req.file.path,
         }
 
         const userExist = await User.exists({
@@ -75,7 +78,7 @@ const processRegister = async (req, res) => {
     }
 }
 
-const verifyUserAndActivateUser = async(req, res) => {
+const verifyUserAndActivateUser = async (req, res) => {
     try {
         const token = req.body.token;
         if (!token) {
@@ -85,18 +88,46 @@ const verifyUserAndActivateUser = async(req, res) => {
             })
         }
 
-        const decoded = jwt.verify(token, jwtActivationKey);
+        try {
+            const decoded = jwt.verify(token, jwtActivationKey);
 
-        const user = await User.create(decoded);
+            const userExist = await User.exists({
+                email: decoded.email
+            });
 
-
-        return successResponseController(res, {
-            statusCode: 201,
-            message: 'User activated successfully',
-            payload: {
-                user
+            if (userExist) {
+                errorResponseController(res, {
+                    statusCode: 409,
+                    message: 'User already exist with this email address',
+                })
             }
-        })
+
+            const user = await User.create(decoded);
+            return successResponseController(res, {
+                statusCode: 201,
+                message: 'User activated successfully',
+                payload: {
+                    user
+                }
+            })
+
+        } catch (error) {
+            if (error.name === 'TokenExpiredError') {
+                return errorResponseController(res, {
+                    statusCode: 401,
+                    message: 'Token has expired'
+                })
+            } else if (error.name === 'JsonWebTokenError') {
+                return errorResponseController(res, {
+                    statusCode: 401,
+                    message: 'Invalid Token'
+                })
+            } else {
+                console.error(error);
+            }
+
+        }
+
     } catch (error) {
         console.error(error);
     }
