@@ -39,7 +39,7 @@ const VALID_IMAGE_EXTENSIONS = process.env.VALID_IMAGE_EXTENSIONS || ['image/jpg
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-    if(!file.mimetype.startswith('image/')){
+    if(!file.mimetype.startsWith('image/')){
         return cb(new Error('Only image files are allowed'), false);
     }
     if(!VALID_IMAGE_EXTENSIONS.includes(file.mimetype)){

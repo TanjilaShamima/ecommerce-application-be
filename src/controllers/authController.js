@@ -28,6 +28,8 @@ const processRegister = async (req, res) => {
         console.log('req.body', req.file)
         const imageBufferString = req.file.buffer.toString('base64');
 
+        console.log('imageBufferString', imageBufferString)
+
         const newUser = {
             name,
             email,
@@ -71,7 +73,8 @@ const processRegister = async (req, res) => {
             statusCode: 200,
             message: `Please go to your ${email} for verifying email address.`,
             payload: {
-                token
+                token,
+                imageBufferString
             }
         })
 
