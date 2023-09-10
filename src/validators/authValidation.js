@@ -22,7 +22,7 @@ const validateUserRegistration = [
     .notEmpty()
     .withMessage("Password is required")
     .isLength({ min: 8 })
-    .withMessage("name should be 8 characters or more")
+    .withMessage("Password should be 8 characters or more")
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-@$!%*?&])[A-Za-z\d-@$!%*?&]{8,}$/)
     .withMessage("Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"),
 
@@ -43,6 +43,81 @@ const validateUserRegistration = [
 
 // login validations
 
+const userLoginValidator = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email address"),
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Password should be 8 characters or more")
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-@$!%*?&])[A-Za-z\d-@$!%*?&]{8,}$/)
+    .withMessage("Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"),
+]
+
+
+const passwordChangeValidator = [
+  body("oldPassword")
+    .trim()
+    .notEmpty()
+    .withMessage("Old Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Old Password should be 8 characters or more"),
+  body("newPassword")
+    .trim()
+    .notEmpty()
+    .withMessage("New Password is required")
+    .isLength({ min: 8 })
+    .withMessage("New password should be 8 characters or more")
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-@$!%*?&])[A-Za-z\d-@$!%*?&]{8,}$/)
+    .withMessage("Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"),
+  body('confirmPassword').custom((value, {req}) => {
+    if(value !== req.body.newPassword) {
+      console.log('Passwords do not match')
+    }
+    return true
+  })
+]
+
+const forgetPasswordValidators = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email address"),
+]
+
+const resetPasswordValidators = [
+  body('token')
+    .trim()
+    .notEmpty()
+    .withMessage("Token is missing or invalid"),
+  body("newPassword")
+    .trim()
+    .notEmpty()
+    .withMessage("New Password is required")
+    .isLength({ min: 8 })
+    .withMessage("New password should be 8 characters or more")
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-@$!%*?&])[A-Za-z\d-@$!%*?&]{8,}$/)
+    .withMessage("Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"),
+  body('confirmPassword').custom((value, {req}) => {
+    if(value !== req.body.newPassword) {
+      console.log('Confirm password and new password must be same');
+    }
+    return true
+  })
+]
+
 module.exports = {
   validateUserRegistration,
+  userLoginValidator,
+  passwordChangeValidator,
+  forgetPasswordValidators,
+  resetPasswordValidators
 };

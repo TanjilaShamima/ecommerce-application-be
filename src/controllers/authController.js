@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const {
     sendWithNodemailer
 } = require("../helper/email");
@@ -7,7 +8,8 @@ const {
 const User = require("../models/userModel");
 const {
     jwtActivationKey,
-    clientUrl
+    clientUrl,
+    jwtAccessKey
 } = require("../secret");
 const jwt = require('jsonwebtoken');
 const {
@@ -26,6 +28,12 @@ const processRegister = async (req, res) => {
         } = req.body;
 
         console.log('req.body', req.file)
+        if(!req.file){
+            return errorResponseController(res, {
+                statusCode: 404,
+                message: 'Image is required'
+            })
+        }
         const imageBufferString = req.file.buffer.toString('base64');
 
         console.log('imageBufferString', imageBufferString)
@@ -59,7 +67,7 @@ const processRegister = async (req, res) => {
             subject: 'Email verification email',
             body: `
             <h2>Hello ${name}</h2>
-            <p>Please click here to this<a href="${clientUrl}/api/auth/activate/${token}" target="_blank"> link </a> to verify the email.</p>
+            <p>Please click here to this<a href="${clientUrl}/api/auth/verify-user/${token}" target="_blank"> link </a> to verify the email.</p>
             `
         }
 
@@ -138,7 +146,86 @@ const verifyUserAndActivateUser = async (req, res) => {
     }
 }
 
+const userLogin = async(req, res) => {
+    try {
+        // email, password
+        const {email, password} = req.body;
+        //is Exist
+
+        const user = await User.findOne({email});
+
+        if(!user){
+            return errorResponseController(res, {
+                statusCode: 404,
+                message: 'User is not exist. Please register first.',
+            })
+        }
+        // compare the password
+
+        const passMatched = await bcrypt.compare(password, user.password)
+
+        if(!passMatched){
+            return errorResponseController(res, {
+                statusCode: 401,
+                message: 'Password does not match. Please',
+            })
+        }
+        //isBanned
+
+        if(user.isBanned){
+            return errorResponseController(res, {
+                statusCode: 403,
+                message: 'You are banned. Please try again',
+            })
+        }
+
+        //access token, cookie
+
+        const accessToken = createJsonWebToken({user}, jwtAccessKey, '15m');
+
+        res.cookie('access_token', accessToken, {
+            maxAge: 15*60*1000, //15min
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+
+        });
+
+        // 
+
+        return successResponseController(res, {
+            statusCode: 200,
+            message: `User login successful`,
+            payload: {
+                user
+            }
+        })
+        
+    } catch (error) {
+        
+    }
+}
+
+const userLogout = async(req, res) => {
+    try {
+        res.clearCookie('access_token');
+
+        return successResponseController(res, {
+            statusCode: 200,
+            message: `User logout successful`,
+            payload: {
+                
+            }
+        })
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     processRegister,
-    verifyUserAndActivateUser
+    verifyUserAndActivateUser,
+    userLogin,
+    userLogout
 }
