@@ -9,13 +9,15 @@ const User = require("../models/userModel");
 const {
     jwtActivationKey,
     clientUrl,
-    jwtAccessKey
+    jwtAccessKey,
+    jwtRefreshKey
 } = require("../secret");
 const jwt = require('jsonwebtoken');
 const {
     successResponseController,
     errorResponseController
 } = require("./responseController");
+const { response } = require('express');
 
 const processRegister = async (req, res) => {
     try {
@@ -191,7 +193,15 @@ const userLogin = async(req, res) => {
 
         });
 
-        // 
+        // refresh token
+        const refreshToken = createJsonWebToken({user}, jwtRefreshKey, '7d');
+
+        response.cookie('refresh_token', refreshToken, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+        })
 
         return successResponseController(res, {
             statusCode: 200,
@@ -223,9 +233,73 @@ const userLogout = async(req, res) => {
     }
 }
 
+const handleRefreshToken = async(req, res) => {
+    try {
+
+        const accessToken = req.cookies.refresh_token;
+        const decode = jwt.verify(accessToken, jwtAccessKey);
+
+        if(!decode){
+            return errorResponseController(res, {
+                statusCode: 401,
+                message: 'Invalid refresh token',
+            })
+        }
+
+        return successResponseController(res, {
+            statusCode: 200,
+            message: `Protected resource was successfully`,
+            payload: {
+                decode
+            }
+        })
+        
+    } catch (error) {
+        
+    }
+}
+
+const handleProtected = async(req, res) => {
+    try {
+
+        const oldRefreshToken = req.cookies.refresh_token;
+        const decode = jwt.verify(oldRefreshToken, jwtRefreshKey);
+
+        if(!decode){
+            return errorResponseController(res, {
+                statusCode: 401,
+                message: 'Invalid refresh token',
+            })
+        }
+
+        const accessToken = createJsonWebToken({decode}, jwtAccessKey, '15m');
+
+        res.cookie('access_token', accessToken, {
+            maxAge: 15*60*1000, //15min
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+
+        });
+
+        return successResponseController(res, {
+            statusCode: 200,
+            message: `New access token is generated`,
+            payload: {
+                decode
+            }
+        })
+        
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
     processRegister,
     verifyUserAndActivateUser,
     userLogin,
-    userLogout
+    userLogout,
+    handleRefreshToken,
+    handleProtected
 }

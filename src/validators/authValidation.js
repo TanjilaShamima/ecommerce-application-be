@@ -114,10 +114,18 @@ const resetPasswordValidators = [
   })
 ]
 
+const validateRefreshToken = [
+  body('token')
+    .trim()
+    .notEmpty()
+    .withMessage("Token is missing or invalid"),
+]
+
 module.exports = {
   validateUserRegistration,
   userLoginValidator,
   passwordChangeValidator,
   forgetPasswordValidators,
-  resetPasswordValidators
+  resetPasswordValidators,
+  validateRefreshToken
 };

@@ -11,6 +11,7 @@ const smtpPassword = process.env.SMTP_PASSWORD || ''
 const clientUrl = process.env.CLIENT_URL || ''
 const fileUploadPath = process.env.FILE_UPLOAD_PATH || 'public/images/users'
 const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY || 'Tanjila-829'
+const jwtRefreshKey = process.env.JWT_REFRESH_KEY || 'Tanjila-829'
 
 module.exports = {
     serverPort: serverPort,
@@ -22,5 +23,6 @@ module.exports = {
     clientUrl,
     fileUploadPath,
     jwtAccessKey,
-    jwtResetPasswordKey
+    jwtResetPasswordKey,
+    jwtRefreshKey
 }
